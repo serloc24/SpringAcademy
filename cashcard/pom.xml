@@ -11,8 +11,8 @@
 	<groupId>com.serloc</groupId>
 	<artifactId>cashcard</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CashCard</name>
-	<description>CashCard service for learning purposes</description>
+	<name>com.serloc.cashcard.CashCard</name>
+	<description>com.serloc.cashcard.CashCard service for learning purposes</description>
 	<url/>
 	<licenses>
 		<license/>
