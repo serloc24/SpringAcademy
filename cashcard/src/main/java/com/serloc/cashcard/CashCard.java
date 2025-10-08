@@ -13,7 +13,7 @@ class CashCard{
     private Long id;
 
     private Double amount;
-    
+
     public CashCard(){}
 
     public CashCard(Long id, Double amount) {
