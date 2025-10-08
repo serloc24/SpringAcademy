@@ -1,14 +1,16 @@
 package com.serloc.cashcard;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.parser.Entity;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class CashCardRepositoryImpl implements CashCardRepository {
+public class CashCardRepositoryImpl implements CashCardRepository{
     private EntityManager entityManager;
 
     @Autowired
@@ -17,8 +19,8 @@ public class CashCardRepositoryImpl implements CashCardRepository {
     }
 
     @Override
-    public CashCard findById(Long theId) {
-        return entityManager.find(CashCard.class, theId);
+    public Optional<CashCard> findById(Long theId) {
+        return Optional.ofNullable(entityManager.find(CashCard.class, theId));
     }
 
     @Override
@@ -27,4 +29,13 @@ public class CashCardRepositoryImpl implements CashCardRepository {
         entityManager.persist(theCashCard);
         return theCashCard;
     }
+
+    @Override
+    public List<CashCard> findAll(int pageNumber, int pageSize, String sortBy) {
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c from CashCard c ORDER BY c.amount", CashCard.class);
+        return query.setFirstResult(pageNumber * pageSize)
+                .setMaxResults(pageSize).getResultList();
+    }
+
+
 }
