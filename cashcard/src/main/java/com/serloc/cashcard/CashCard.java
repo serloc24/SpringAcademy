@@ -16,11 +16,14 @@ class CashCard{
 
     private Double amount;
 
+    private String owner;
+
     public CashCard(){}
 
-    public CashCard(Long id, Double amount) {
+    public CashCard(Long id, Double amount, String owner) {
         this.id = id;
         this.amount = amount;
+        this.owner = owner;
     }
 
     public Long getId() {
@@ -34,19 +37,19 @@ class CashCard{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CashCard)) return false;
-        CashCard cashCard = (CashCard) o;
+        if (!(o instanceof CashCard cashCard)) return false;
         return Objects.equals(id, cashCard.id) &&
-                Objects.equals(amount, cashCard.amount);
+                Objects.equals(amount, cashCard.amount) &&
+                Objects.equals(owner, cashCard.owner);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, amount);
+        return Objects.hash(id, amount,owner);
     }
 
     @Override
     public String toString() {
-        return "CashCard{id=" + id + ", amount=" + amount + '}';
+        return "CashCard{id=" + id + ", amount=" + amount + ", owner= " + owner + '}';
     }
 }

@@ -1,7 +1,5 @@
 package com.serloc.cashcard;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -10,4 +8,6 @@ public interface CashCardRepository{
     CashCard createCashCard(CashCard theCashCard);
     //List<CashCard> findAll();
     List<CashCard> findAll(int pageNumber, int pageSize, String sortBy);
+    Optional<CashCard> findByIdAndOwner(Long theId, String theOwner);
+    List<CashCard> findByOwner(int pageNumber, int pageSize, String sortBy, String theOwner);
 }

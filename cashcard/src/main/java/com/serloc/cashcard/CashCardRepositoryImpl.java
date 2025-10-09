@@ -32,7 +32,25 @@ public class CashCardRepositoryImpl implements CashCardRepository{
 
     @Override
     public List<CashCard> findAll(int pageNumber, int pageSize, String sortBy) {
-        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c from CashCard c ORDER BY c.amount", CashCard.class);
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c from CashCard c ORDER BY :data", CashCard.class);
+        query.setParameter("data", sortBy);
+        return query.setFirstResult(pageNumber * pageSize)
+                .setMaxResults(pageSize).getResultList();
+    }
+
+    @Override
+    public Optional<CashCard> findByIdAndOwner(Long theId, String theOwner) {
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c FROM CashCard c WHERE id = :theId AND owner = :theOwner", CashCard.class);
+        query.setParameter("theId",theId);
+        query.setParameter("theOwner",theOwner);
+        return Optional.ofNullable(query.getSingleResult());
+    }
+
+    @Override
+    public List<CashCard> findByOwner(int pageNumber, int pageSize, String sortBy,String theOwner) {
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c FROM CashCard c WHERE owner = :theOwner ORDER BY :data", CashCard.class);
+        query.setParameter("theOwner",theOwner);
+        query.setParameter("data", sortBy);
         return query.setFirstResult(pageNumber * pageSize)
                 .setMaxResults(pageSize).getResultList();
     }
