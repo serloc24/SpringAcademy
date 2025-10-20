@@ -1,6 +1,7 @@
 package com.serloc.cashcard;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -43,14 +44,19 @@ public class CashCardRepositoryImpl implements CashCardRepository{
         TypedQuery<CashCard> query = entityManager.createQuery("SELECT c FROM CashCard c WHERE id = :theId AND owner = :theOwner", CashCard.class);
         query.setParameter("theId",theId);
         query.setParameter("theOwner",theOwner);
-        return Optional.ofNullable(query.getSingleResult());
+        try {
+            return Optional.of(query.getSingleResult());
+        }catch (NoResultException e){
+            return Optional.empty();
+        }
+
     }
 
     @Override
     public List<CashCard> findByOwner(int pageNumber, int pageSize, String sortBy,String theOwner) {
-        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c FROM CashCard c WHERE owner = :theOwner ORDER BY :data", CashCard.class);
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c FROM CashCard c WHERE c.owner = :theOwner ORDER BY c." + sortBy , CashCard.class);
         query.setParameter("theOwner",theOwner);
-        query.setParameter("data", sortBy);
+
         return query.setFirstResult(pageNumber * pageSize)
                 .setMaxResults(pageSize).getResultList();
     }
