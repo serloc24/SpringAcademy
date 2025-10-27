@@ -10,4 +10,5 @@ public interface CashCardRepository{
     List<CashCard> findAll(int pageNumber, int pageSize, String sortBy);
     Optional<CashCard> findByIdAndOwner(Long theId, String theOwner);
     List<CashCard> findByOwner(int pageNumber, int pageSize, String sortBy, String theOwner);
+    void update(CashCard theCashCard);
 }

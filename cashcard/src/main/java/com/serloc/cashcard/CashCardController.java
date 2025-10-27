@@ -48,4 +48,16 @@ public class CashCardController {
         URI locationOfNewCashCard = ucb.path("/cashcards/{id}").buildAndExpand(theCashCard.getId()).toUri();
         return ResponseEntity.created(locationOfNewCashCard).build();
     }
+
+    @PutMapping("/{requestedId}")
+    private ResponseEntity<CashCard> updateCashCard(@PathVariable Long requestedId, @RequestBody CashCard cashCardToUpdate, Principal principal){
+        Optional<CashCard> theCashCard = cashCardRepository.findByIdAndOwner(requestedId, principal.getName());
+        if(theCashCard.isPresent()){
+            CashCard updatedCashCard = new CashCard(theCashCard.get().getId(), cashCardToUpdate.getAmount(), principal.getName());
+            cashCardRepository.update(updatedCashCard);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

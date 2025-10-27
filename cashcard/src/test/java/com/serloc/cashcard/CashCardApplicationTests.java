@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -161,5 +163,51 @@ class CashCardApplicationTests {
                 .withBasicAuth("sarah1", "abc123")
                 .getForEntity("/cashcards/102", String.class); // kumar2's data
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldUpdateAnExistingCashCard(){
+        CashCard cashCardToUpdate = new CashCard(null,19.99,null);
+        HttpEntity<CashCard> request = new HttpEntity<>(cashCardToUpdate);
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/99", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        //Get the modified card to check if it changed
+        ResponseEntity<String> getResponse = restTemplate.withBasicAuth("sarah1", "abc123")
+                .getForEntity("/cashcards/99", String.class);
+
+        //check if the modified card exists
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        assertThat(id).isEqualTo(99);
+
+        //Check if the amount is changed
+        Double amount = documentContext.read("$.amount");
+        assertThat(amount).isEqualTo(19.99);
+    }
+
+    @Test
+    void shouldNotUpdateACashCardThatNotExist(){
+        CashCard unknownCashCard = new CashCard(null, 19.99, null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unknownCashCard);
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/202", HttpMethod.PUT, request, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldNotUpdateACashCardThatIsOwnedBySomeoneElse(){
+        CashCard unknownOwnerCashCard = new CashCard(null, 19.99, null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unknownOwnerCashCard);
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("hank-owns-no-cards", "qrs456")
+                .exchange("/cashcards/99", HttpMethod.PUT, request, Void.class);
+
+        //Its forbidden because hanks has not OWNER role in SecurityConfig
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

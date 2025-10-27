@@ -61,5 +61,11 @@ public class CashCardRepositoryImpl implements CashCardRepository{
                 .setMaxResults(pageSize).getResultList();
     }
 
+    @Override
+    @Transactional
+    public void update(CashCard theCashCard) {
+        entityManager.merge(theCashCard);
+    }
+
 
 }
