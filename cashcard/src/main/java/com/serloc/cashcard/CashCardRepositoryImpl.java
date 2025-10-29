@@ -67,5 +67,17 @@ public class CashCardRepositoryImpl implements CashCardRepository{
         entityManager.merge(theCashCard);
     }
 
+    @Override
+    @Transactional
+    public boolean deleteByIdAndOwner(Long theId, String owner) {
+        Optional<CashCard> cashCardToDelete = findByIdAndOwner(theId,owner);
+        if(cashCardToDelete.isPresent()){
+            entityManager.remove(cashCardToDelete);
+            return true;
+        }
+        return false;
+    }
+
+
 
 }
