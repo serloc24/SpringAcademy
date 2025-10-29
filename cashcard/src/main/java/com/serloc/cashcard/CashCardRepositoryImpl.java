@@ -33,8 +33,7 @@ public class CashCardRepositoryImpl implements CashCardRepository{
 
     @Override
     public List<CashCard> findAll(int pageNumber, int pageSize, String sortBy) {
-        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c from CashCard c ORDER BY :data", CashCard.class);
-        query.setParameter("data", sortBy);
+        TypedQuery<CashCard> query = entityManager.createQuery("SELECT c from CashCard c ORDER BY c." + sortBy, CashCard.class);
         return query.setFirstResult(pageNumber * pageSize)
                 .setMaxResults(pageSize).getResultList();
     }
@@ -72,7 +71,7 @@ public class CashCardRepositoryImpl implements CashCardRepository{
     public boolean deleteByIdAndOwner(Long theId, String owner) {
         Optional<CashCard> cashCardToDelete = findByIdAndOwner(theId,owner);
         if(cashCardToDelete.isPresent()){
-            entityManager.remove(cashCardToDelete);
+            entityManager.remove(cashCardToDelete.get());
             return true;
         }
         return false;

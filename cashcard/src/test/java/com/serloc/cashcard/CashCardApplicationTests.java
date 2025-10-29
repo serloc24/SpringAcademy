@@ -21,7 +21,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CashCardApplicationTests {
     @Autowired
     TestRestTemplate restTemplate;
@@ -58,27 +59,28 @@ class CashCardApplicationTests {
         assertThat(response.getBody()).isBlank();
     }
 
-//    @Test
-//    void shouldCreateANewCashCard(){
-//        //We send a post to the server to test that creates a new CashCard and add the ID
-//        CashCard newCashCard = new CashCard(null, 250.00,null);
-//        ResponseEntity<Void> createResponse = restTemplate.withBasicAuth("sarah1", "abc123")
-//                .postForEntity("/cashcards", newCashCard, Void.class);
-//        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-//
-//        //The location is where we can find the CashCard info with a GET
-//        URI locationOfNewCashCard = createResponse.getHeaders().getLocation();
-//        ResponseEntity<String> getResponse = restTemplate.withBasicAuth("sarah1", "abc123")
-//                .getForEntity(locationOfNewCashCard, String.class);
-//        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//        //Assert to check the response content
-//        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
-//        Number id = documentContext.read("$.id");
-//        Double amount = documentContext.read("$.amount");
-//        assertThat(id).isNotNull();
-//        assertThat(amount).isEqualTo(250.00);
-//    }
+    @Test
+    @DirtiesContext
+    void shouldCreateANewCashCard(){
+        //We send a post to the server to test that creates a new CashCard and add the ID
+        CashCard newCashCard = new CashCard(null, 250.00,null);
+        ResponseEntity<Void> createResponse = restTemplate.withBasicAuth("sarah1", "abc123")
+                .postForEntity("/cashcards", newCashCard, Void.class);
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        //The location is where we can find the CashCard info with a GET
+        URI locationOfNewCashCard = createResponse.getHeaders().getLocation();
+        ResponseEntity<String> getResponse = restTemplate.withBasicAuth("sarah1", "abc123")
+                .getForEntity(locationOfNewCashCard, String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        //Assert to check the response content
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        Double amount = documentContext.read("$.amount");
+        assertThat(id).isNotNull();
+        assertThat(amount).isEqualTo(250.00);
+    }
 
     @Test
     void shouldReturnAListOfCashCards(){
